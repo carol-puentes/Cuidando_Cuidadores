@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import { Platform } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { onAuthStateChanged, signOut } from 'firebase/auth';
-import { auth } from './firebaseConfig';
+import * as Notifications from 'expo-notifications';
+import * as Permissions from 'expo-permissions';
+
+import { auth, db } from './firebaseConfig'; // Asegúrate que db es Firestore inicializado
+import { doc, setDoc } from 'firebase/firestore';
 
 import LoginScreen from './Screens/LoginScreen';
 import RegisterScreen from './Screens/RegisterScreen';
@@ -12,7 +16,8 @@ import HomeScreen from './Screens/HomeScreen';
 import HelpScreen from './Screens/HelpScreen';
 import ProgressScreen from './Screens/ProgressScreen';
 
-import Toast from 'react-native-toast-message'; // <-- IMPORTANTE
+import SplashScreen from './Screens/SplashScreen';
+import Toast from 'react-native-toast-message';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -42,7 +47,7 @@ function HomeTabs() {
         component={HomeScreen}
         listeners={{
           tabPress: (e) => {
-            e.preventDefault(); // evita que navegue
+            e.preventDefault();
             handleLogout();
           },
         }}
@@ -51,25 +56,68 @@ function HomeTabs() {
   );
 }
 
+async function registerForPushNotificationsAsync() {
+  let token;
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    });
+  }
+
+  const { status: existingStatus } = await Permissions.getAsync(Permissions.NOTIFICATIONS);
+  let finalStatus = existingStatus;
+  if (existingStatus !== 'granted') {
+    const { status } = await Permissions.askAsync(Permissions.NOTIFICATIONS);
+    finalStatus = status;
+  }
+
+  if (finalStatus !== 'granted') {
+    alert('No se pueden recibir notificaciones sin permiso');
+    return;
+  }
+
+  token = (await Notifications.getExpoPushTokenAsync()).data;
+  console.log('Expo Push Token:', token);
+  return token;
+}
+
 export default function App() {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [authChecked, setAuthChecked] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
-      setLoading(false);
+      setAuthChecked(true);
+
+      if (currentUser) {
+        // Registrar token y guardarlo en Firestore para este usuario
+        const token = await registerForPushNotificationsAsync();
+        if (token) {
+          await setDoc(doc(db, 'users', currentUser.uid), { expoPushToken: token }, { merge: true });
+        }
+      }
     });
 
     return unsubscribe;
   }, []);
 
-  if (loading) {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Cargando...</Text>
-      </View>
-    );
+  // Opcional: escuchar notificaciones cuando la app está abierta
+  useEffect(() => {
+    const subscription = Notifications.addNotificationReceivedListener(notification => {
+      console.log('Notificación recibida:', notification);
+      // Puedes mostrar un toast o actualizar UI aquí
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  if (showSplash || !authChecked) {
+    return <SplashScreen onAnimationEnd={() => setShowSplash(false)} />;
   }
 
   return (
@@ -87,20 +135,7 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
 
-      <Toast /> {/* <-- AÑADE ESTO */}
+      <Toast />
     </>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-  },
-  text: {
-    fontSize: 24,
-    color: '#333',
-  },
-});

@@ -103,7 +103,6 @@ export default function RegisterScreen({ navigation }) {
 
   const [proximaCitaFecha, setProximaCitaFecha] = useState(null);
   const [proximaCitaHora, setProximaCitaHora] = useState(null);
-
   const [mostrarPickerFechaCita, setMostrarPickerFechaCita] = useState(false);
   const [mostrarPickerHoraCita, setMostrarPickerHoraCita] = useState(false);
 
@@ -120,7 +119,6 @@ export default function RegisterScreen({ navigation }) {
   const [showPatientDatePicker, setShowPatientDatePicker] = useState(false);
 
   const [showTimePickerIndex, setShowTimePickerIndex] = useState(null);
-  const [showDatePickerIndex, setShowDatePickerIndex] = useState(null);
   const [timePickerValue, setTimePickerValue] = useState(new Date());
 
   // Nuevo: Estado del paciente y campos dinámicos
@@ -145,10 +143,6 @@ export default function RegisterScreen({ navigation }) {
   // Funciones para horarios de visita dinámicos
   const addVisitSchedule = () => {
     setVisitSchedules([...visitSchedules, { day: "", time: "" }]);
-  };
-  const removeVisitSchedule = (index) => {
-    const newSchedules = visitSchedules.filter((_, i) => i !== index);
-    setVisitSchedules(newSchedules);
   };
 
   const updateVisitSchedule = (field, value, index) => {
@@ -252,22 +246,19 @@ export default function RegisterScreen({ navigation }) {
     }
 
     // Validación adicional si está hospitalizado
-  
-
     if (status === "hospitalizado") {
-  const hasEmptySchedule = visitSchedules.some(
-    (s) => !s.date || !s.time || s.date.trim?.() === "" || s.time.trim() === ""
-  );
+      const hasEmptySchedule = visitSchedules.some(
+        (s) => s.day.trim() === "" || s.time.trim() === ""
+      );
 
-  if (visitSchedules.length === 0 || hasEmptySchedule) {
-    Toast.show({
-      type: "error",
-      text1: "Completa todos los horarios de visita.",
-    });
-    return;
-  }
-}
-
+      if (visitSchedules.length === 0 || hasEmptySchedule) {
+        Toast.show({
+          type: "error",
+          text1: "Completa todos los horarios de visita.",
+        });
+        return;
+      }
+    }
 
     // Si todo está bien, continuar
     setStep(3); // o la siguiente acción
@@ -623,91 +614,77 @@ export default function RegisterScreen({ navigation }) {
             <Text style={styles.title}>Cuidados en hospital</Text>
           )}
 
-          {/* Recomendaciones */}
+          {/* Botón agregar recomendaciones (solo una vez al final) */}
+
           <View style={styles.Divrecomendation}>
             <Text style={{ marginBottom: 8, color: "#5a5a5a" }}>
               Recomendaciones
             </Text>
-            {recommendations.map((rec, i) => (
-              <View key={i} style={styles.recommendationRow}>
-                <TextInput
-                  style={styles.recommendationInput}
-                  placeholder={`Recomendación #${i + 1}`}
-                  value={rec}
-                  onChangeText={(text) => updateRecommendation(text, i)}
-                />
-                <TouchableOpacity
-                  onPress={() => removeRecommendationField(i)}
-                  style={[styles.circleButton, styles.deleteButton]}
-                >
-                  <Text style={{ color: "#fff", fontSize: 16 }}>−</Text>
-                </TouchableOpacity>
-              </View>
-            ))}
+
+            <View
+              style={{ justifyContent: "space-between" }}
+            >
+              {recommendations.map((rec, i) => (
+                <View key={i} style={styles.recommendationRow}>
+                  <TextInput
+                    style={styles.recommendationInput}
+                    placeholder={`Recomendación #${i + 1}`}
+                    value={rec}
+                    onChangeText={(text) => updateRecommendation(text, i)}
+                  />
+
+                  {/* Botón eliminar */}
+                  <TouchableOpacity
+                    onPress={() => removeRecommendationField(i)}
+                    style={[styles.circleButton, styles.deleteButton]}
+                  >
+                    <Text style={{ color: "#fff", fontSize: 16 }}>−</Text>
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </View>
+
           </View>
 
+           {/* Btn para añadir mas recomendaciones*/}
           <View
-            style={{ alignItems: "center", width: "80%", marginBottom: 50 }}
+            style={{
+              alignItems: "center",
+              width: "80%",
+              marginBottom: 50,
+            }}
           >
-            <TouchableOpacity onPress={addRecommendationField}>
+            <TouchableOpacity
+              onPress={addRecommendationField}
+            >
               <Text style={styles.buttonVolver}>+ Añadir otra</Text>
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => {
-              if (status === "hospitalizado") {
-                setStep(5); // Mostrar horarios de visita
-              } else {
-                handleThirdNext(); // Continuar normalmente
-              }
-            }}
-          >
-            <Text style={styles.buttonText}>Continuar</Text>
-          </TouchableOpacity>
+          {/* Horarios de visita solo si hospitalizado */}
 
-          <TouchableOpacity onPress={() => setStep(3)}>
-            <Text style={styles.buttonVolver}>Volver</Text>
-          </TouchableOpacity>
-        </>
-      )}
-
-      {step === 5 && status === "hospitalizado" && (
-        <>
-          <Text style={styles.title}>Cuidados en hospital</Text>
-
-          <View style={styles.date}>
-            <Text style={{ marginBottom: 8, color: "#5a5a5a" }}>
-              Horarios de visitas:
-            </Text>
-
-            {visitSchedules.map((schedule, i) => (
-              <View key={i} style={{ marginBottom: 15 }}>
-                {/* Día y Hora */}
-                <View style={{ flexDirection: "row", marginBottom: 6 }}>
-                  {/* Fecha */}
+          {status === "hospitalizado" && (
+            <>
+              <Text style={{ marginTop: 20 }}>Horarios de visita:</Text>
+              {visitSchedules.map((schedule, i) => (
+                <View
+                  key={i}
+                  style={{ flexDirection: "row", marginBottom: 10 }}
+                >
+                  <TextInput
+                    style={[styles.input, { flex: 1, marginRight: 5 }]}
+                    placeholder="Día"
+                    value={schedule.day}
+                    onChangeText={(text) => updateVisitSchedule("day", text, i)}
+                  />
                   <TouchableOpacity
-                    style={{
-                      flex: 1,
-                      marginRight: 5,
-                      borderWidth: 1,
-                      padding: 8,
-                      borderRadius: 4,
-                    }}
-                    onPress={() => setShowDatePickerIndex(i)}
-                  >
-                    <Text>
-                      {schedule.date
-                        ? new Date(schedule.date).toLocaleDateString()
-                        : "Fecha"}
-                    </Text>
-                  </TouchableOpacity>
-
-                  {/* Hora */}
-                  <TouchableOpacity
-                    style={{ flex: 1, marginLeft: 5, borderWidth: 1, padding: 8, borderRadius: 4, justifyContent: "center",}}
-                    onPress={() => { setShowTimePickerIndex(i);
+                    style={[
+                      styles.input,
+                      { flex: 1, marginLeft: 5, justifyContent: "center" },
+                    ]}
+                    onPress={() => {
+                      setShowTimePickerIndex(i);
+                      // Establecer valor inicial del picker con la hora actual o la guardada
                       if (schedule.time) {
                         const [hours, minutes] = schedule.time.split(":");
                         const date = new Date();
@@ -718,81 +695,53 @@ export default function RegisterScreen({ navigation }) {
                       }
                     }}
                   >
-                    <Text>{schedule.time || "Hora"}</Text>
+                    <Text>{schedule.time || "Seleccionar hora"}</Text>
                   </TouchableOpacity>
-                  
-
-                   <TouchableOpacity
-                  onPress={() => removeVisitSchedule(i)}
-                  style={[styles.circleButton, styles.deleteButton]}
-                >
-                  <Text style={{ color: "#fff", fontSize: 16 }}>−</Text>
-                </TouchableOpacity>
                 </View>
-              </View>
-            ))}
+              ))}
 
-            {/* Date Picker */}
-            {showDatePickerIndex !== null && (
-              <DateTimePicker
-                value={
-                  visitSchedules[showDatePickerIndex].date
-                    ? new Date(visitSchedules[showDatePickerIndex].date)
-                    : new Date()
-                }
-                mode="date"
-                display="default"
-                minimumDate={new Date()}
-                onChange={(event, selectedDate) => {
-                  setShowDatePickerIndex(null);
-                  if (selectedDate) {
-                    updateVisitSchedule(
-                      "date",
-                      selectedDate.toISOString(),
-                      showDatePickerIndex
-                    );
-                  }
-                }}
+              {showTimePickerIndex !== null && (
+                <DateTimePicker
+                  value={timePickerValue}
+                  mode="time"
+                  is24Hour={true}
+                  display="default"
+                  onChange={(event, selectedTime) => {
+                    if (event.type === "set" && selectedTime) {
+                      const hours = selectedTime
+                        .getHours()
+                        .toString()
+                        .padStart(2, "0");
+                      const minutes = selectedTime
+                        .getMinutes()
+                        .toString()
+                        .padStart(2, "0");
+                      const formattedTime = `${hours}:${minutes}`;
+                      updateVisitSchedule(
+                        "time",
+                        formattedTime,
+                        showTimePickerIndex
+                      );
+                    }
+                    setShowTimePickerIndex(null);
+                  }}
+                />
+              )}
+
+              <Button
+                title="Agregar horario de visita"
+                onPress={addVisitSchedule}
               />
-            )}
+            </>
+          )}
 
-            {/* Time Picker */}
-{showTimePickerIndex !== null && (
-  <DateTimePicker
-    value={timePickerValue}
-    mode="time"
-    is24Hour={true}
-    display="default"
-    onChange={(event, selectedTime) => {
-      if (event.type === "set" && selectedTime) {
-        const hours = selectedTime.getHours().toString().padStart(2, "0");
-        const minutes = selectedTime.getMinutes().toString().padStart(2, "0");
-        const formattedTime = `${hours}:${minutes}`;
-        updateVisitSchedule("time", formattedTime, showTimePickerIndex);
-      }
-      setShowTimePickerIndex(null);
-    }}
-  />
-)}
-
-
-
-            {/* Botón añadir */}
-            <View
-              style={{ alignItems: "center", width: "80%", marginBottom: 50 }}
-            >
-              <TouchableOpacity onPress={addVisitSchedule}>
-                <Text style={styles.buttonVolver}>+ Añadir otra</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-
+          {/* Botones de acción */}
           <TouchableOpacity style={styles.button} onPress={handleThirdNext}>
             <Text style={styles.buttonText}>Continuar</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setStep(4)}>
-            <Text style={styles.buttonVolver}> Volver </Text>
+          <TouchableOpacity onPress={() => setStep(3)}>
+            <Text style={styles.buttonVolver}>Volver</Text>
           </TouchableOpacity>
         </>
       )}
@@ -808,7 +757,7 @@ const styles = StyleSheet.create({
   },
 
   Divrecomendation: {
-    marginTop: 40,
+    marginTop:40,
     width: "80%",
     marginBottom: 1,
     color: "#ccc",
