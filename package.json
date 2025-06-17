@@ -43,7 +43,8 @@
     "react-native-webview": "13.12.5",
     "react-native-youtube-iframe": "^2.3.0",
     "yet": "^0.1.0",
-    "expo-device": "~7.0.3"
+    "expo-device": "~7.0.3",
+    "expo-speech": "~13.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0"

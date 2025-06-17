@@ -1,5 +1,5 @@
 export default {
-  semana: 2,
+  semana: 3,
   titulo: "¿Quién cuida al cuidador? Autocuidado y bitácora emocional",
   objetivos: "Promover conciencia del autocuidado, hábitos saludables, establecer límites.",
   recursos: [

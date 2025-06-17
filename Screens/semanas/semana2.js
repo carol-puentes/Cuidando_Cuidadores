@@ -4,7 +4,7 @@ export default {
   objetivos: "Promover conciencia del autocuidado, hábitos saludables, establecer límites.",
   recursos: [
     {
-      tipo: 'video',
+      tipo: 'Videollamada',
       texto: 'Ver sesión 2',
       url: 'https://enlace-a-video-semana2.com',
     },

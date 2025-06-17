@@ -7,10 +7,6 @@
     "icon": "./assets/app.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
-    
-    "splash": {
-      "backgroundColor": "#ffffff"
-    },
     "ios": {
       "supportsTablet": true
     },

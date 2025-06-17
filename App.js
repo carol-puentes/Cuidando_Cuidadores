@@ -216,6 +216,7 @@ import TallerNavigator from './Screens/TallerNavigator';
 
 import Toast from 'react-native-toast-message';
 
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
