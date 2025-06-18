@@ -94,8 +94,11 @@ import { BlurView } from "expo-blur";
 import semana1 from "./semanas/semana1";
 import semana2 from "./semanas/semana2";
 import semana3 from "./semanas/semana3";
+import semana4 from "./semanas/semana4";
+import semana5 from "./semanas/semana5";
+import semana6 from "./semanas/semana6";
 
-const TODAS_LAS_SEMANAS = [semana1, semana2, semana3];
+const TODAS_LAS_SEMANAS = [semana1, semana2, semana3, semana4, semana5, semana6];
 
 export default function TallerScreen({ navigation }) {
   const [progreso, setProgreso] = useState({
