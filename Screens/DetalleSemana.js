@@ -526,6 +526,7 @@ import * as Speech from "expo-speech";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { MaterialCommunityIcons, Feather, Ionicons } from "@expo/vector-icons";
 
+
 if (
   Platform.OS === "android" &&
   UIManager.setLayoutAnimationEnabledExperimental
@@ -685,6 +686,8 @@ export default function DetalleSemana({ route, navigation }) {
         return "play-circle-outline";
       case "formulario":
         return "pencil-outline";
+      case "videollamada":
+        return "video-outline"; 
       default:
         return "file-outline";
     }
@@ -705,6 +708,7 @@ export default function DetalleSemana({ route, navigation }) {
           <View style={styles.botonVolver}>
             <Ionicons name="arrow-back" size={24} color="#8080ff" />
           </View>
+          
         </TouchableOpacity>
       </View>
 
@@ -824,15 +828,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
 
   },
-
-  // semana:{
-  //               flexDirection: "row",
-  //               alignItems: "center",
-  //               justifyContent: "space-between",
-  //               marginTop: 40,
-  //               marginBottom: 20,
-  //             },
-
   titulo: {
     fontSize: 22,
     fontWeight: "700",

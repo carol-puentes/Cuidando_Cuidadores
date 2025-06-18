@@ -355,34 +355,6 @@ const HelpScreen = () => {
         />
       )}
 
-      {/* <TextInput
-        value={postText}
-        onChangeText={setPostText}
-        placeholder={`Comparte en ${category.toLowerCase()}`}
-        style={{
-          borderWidth: 1,
-          borderColor: "#ccc",
-          padding: 12,
-          borderRadius: 10,
-          backgroundColor: "#fff",
-          marginTop: 20,
-        }}
-      />
-      <TouchableOpacity
-        onPress={handlePost}
-        style={{
-          backgroundColor: "#8080FF",
-          padding: 14,
-          borderRadius: 10,
-          alignItems: "center",
-          marginTop: 10,
-        }}
-      >
-        <Text style={{ color: "#fff", fontWeight: "bold", fontSize: 16 }}>
-          Publicar
-        </Text>
-      </TouchableOpacity> */}
-
       {expandedPostId === null && (
   <>
     <TextInput

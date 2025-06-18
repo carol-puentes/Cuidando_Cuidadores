@@ -3,11 +3,6 @@ const semana1 = {
   semana: 1,
   titulo: "SEMBRANDO EL CUIDADO INTERIOR",
   objetivos: `
-🌱 Esta semana será el punto de partida para reconectar contigo.
-
-Sabemos que cuidar a otros puede ser hermoso, pero también exigente y solitario. Por eso, en estos primeros días te invitamos a detenerte, respirar y sembrar una semilla de cuidado interior.
-Este es tu espacio. Este es tu tiempo.
-
 🌿 Hoy sembramos juntos el cuidado interior que te sostendrá en el camino del cuidado a otros.
   `,
   recursos: [
@@ -25,24 +20,26 @@ Este es tu espacio. Este es tu tiempo.
     {
       tipo: "video",
       texto: "Instrucciones de la Técnica Benson",
-      url: "https://www.youtube.com/watch?v=tu-video-ejemplo", // <-- Cambia por el link real
+      url: "https://www.youtube.com/watch?v=7SMjGSqLHyA", // <-- Cambia por el link real
+      
+    },
+    {
+      tipo: 'PDF',
+      texto: 'Tecnica del relajacion de Benson',
+      url: 'https://drive.google.com/autocuidado.pdf',
     },
     {
       tipo: "texto",
       texto: "Pasos de la técnica de relajación Benson",
       contenido: `
-        1. Busca un lugar tranquilo y siéntate cómodamente.
-        2. Cierra los ojos lentamente.
-        3. Relaja tus músculos desde los pies hasta la cara.
-        4. Respira profundamente por la nariz, y al exhalar repite mentalmente una palabra que te calme (como "paz", "tranquilidad", "amor").
-        5. Hazlo por 10-15 minutos.
-        6. Al terminar, abre los ojos lentamente y descansa unos minutos más.
+        1. Busca un lugar tranquilo.\nSiéntate o recuéstate en una postura cómoda. Puedes cerrar la puerta, bajar las luces… crear tu propio refugio.\n\n2. Cierra los ojos suavemente.\nNo los fuerces. Solo deja que se cierren como quien descansa, sin tensión..\n3.Suelta tu cuerpo, poco a poco.\n Imagina que cada parte de ti empieza a pesar. Tus pies, tus piernas, tus brazos, tu espalda… como si se hundieran un poco más en el lugar donde estás apoyado(a). Siente cómo todo tu cuerpo descansa, sin esfuerzo. Como si dejara de sostenerse por sí solo.\n\n4. Conecta con tu respiración.\nRespira por la nariz con naturalidad. No hace falta que respires profundo, solo nota el aire entrando y saliendo.\n\n5. Elige una palabra.\nAl exhalar, repite mentalmente una palabra que te traiga paz. Puede ser “uno”, o una palabra que te calme: “paz”, “suave”, “calma”... Si tu mente se distrae, no pasa nada. Solo vuelve a la respiración y a tu palabra, sin juicio.\n\n6. Permanece así de 10 a 20 minutos.\nPuedes abrir los ojos si lo necesitas para revisar el tiempo, pero evita usar alarmas o relojes que te saquen bruscamente\n\n7. Cuando termines, no te apresures.\nQuédate unos minutos más con los ojos cerrados, luego ábrelos con suavidad. No te levantes de inmediato.\n\n
+        
       `,
     },
-    {
-      tipo: "formulario",
-      texto: "Bitácora emocional",
-      url: "https://forms.gle/tu-bitacora-emocional", // <-- Cambia por el link real
+      {
+      tipo: "videollamada",
+      texto: "Encuentro semanal por Meet",
+      url: "https://meet.google.com/abc-defg-hij", 
     },
     {
       tipo: "pantalla",
@@ -52,6 +49,7 @@ Este es tu espacio. Este es tu tiempo.
     },
   ],
 };
+
 
 export default semana1;
 
