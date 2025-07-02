@@ -197,6 +197,7 @@ import { registerForPushNotificationsAsync } from "./utils/notifications";
 
 
 
+
 const DynamicIslandBackground = () => {
   const { width } = Dimensions.get("window");
 
