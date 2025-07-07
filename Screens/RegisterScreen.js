@@ -274,72 +274,142 @@ export default function RegisterScreen({ navigation }) {
   };
 
   // Registro final con toda la info
-  const handleRegister = async () => {
-    if (!patientDiagnosis || !labReport || !labReportBase64) {
-      Toast.show({
-        type: "error",
-        text1: "Completa el diagnóstico y adjunta el laboratorio.",
-      });
-      return;
-    }
-    if (!status) {
-      Toast.show({
-        type: "error",
-        text1: "Selecciona el estado del paciente.",
-      });
-      return;
-    }
+  // const handleRegister = async () => {
+  //   if (!patientDiagnosis || !labReport || !labReportBase64) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Completa el diagnóstico y adjunta el laboratorio.",
+  //     });
+  //     return;
+  //   }
+  //   if (!status) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Selecciona el estado del paciente.",
+  //     });
+  //     return;
+  //   }
 
-    try {
-      const userCredential = await createUserWithEmailAndPassword(
-        auth,
+  //   try {
+  //     const userCredential = await createUserWithEmailAndPassword(
+  //       auth,
+  //       email,
+  //       password
+  //     );
+  //     const user = userCredential.user;
+
+  //     await setDoc(doc(db, "users", user.uid), {
+  //       role: "cuidador",
+  //       tutor: {
+  //         name: tutorName,
+  //         birthDate: tutorBirthDate,
+  //         gender: tutorGender,
+  //         address: tutorAddress,
+  //         email,
+  //       },
+  //       paciente: {
+  //         name: patientName,
+  //         birthDate: patientBirthDate,
+  //         gender: patientGender,
+  //         diagnosis: patientDiagnosis,
+  //         labReport: {
+  //           name: labReport.name,
+  //           mimeType: labReport.mimeType,
+  //           base64: labReportBase64,
+  //         },
+  //         status,
+  //         recommendations: recommendations.filter((r) => r.trim() !== ""),
+  //         visitSchedules:
+  //           status === "hospitalizado"
+  //             ? visitSchedules.filter((v) => v.day && v.time)
+  //             : [],
+  //       },
+  //     });
+
+  //     Toast.show({
+  //       type: "success",
+  //       text1: "Registro exitoso",
+  //       text2: "¡Bienvenido!",
+  //     });
+  //     navigation.navigate("Login");
+  //   } catch (error) {
+  //     Toast.show({
+  //       type: "error",
+  //       text1: "Error al registrar",
+  //       text2: error.message,
+  //     });
+  //   }
+  // };
+
+  // Registro final con toda la info
+const handleRegister = async () => {
+  if (!patientDiagnosis || !labReport || !labReportBase64) {
+    Toast.show({
+      type: "error",
+      text1: "Completa el diagnóstico y adjunta el laboratorio.",
+    });
+    return;
+  }
+  if (!status) {
+    Toast.show({
+      type: "error",
+      text1: "Selecciona el estado del paciente.",
+    });
+    return;
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(
+      auth,
+      email,
+      password
+    );
+    const user = userCredential.user;
+
+    await setDoc(doc(db, "users", user.uid), {
+      role: "cuidador",
+      rolNumber: 1, // <-- Nuevo campo agregado
+      tutor: {
+        name: tutorName,
+        birthDate: tutorBirthDate,
+        gender: tutorGender,
+        address: tutorAddress,
         email,
-        password
-      );
-      const user = userCredential.user;
-
-      await setDoc(doc(db, "users", user.uid), {
-        role: "cuidador",
-        tutor: {
-          name: tutorName,
-          birthDate: tutorBirthDate,
-          gender: tutorGender,
-          address: tutorAddress,
-          email,
+      },
+      paciente: {
+        name: patientName,
+        birthDate: patientBirthDate,
+        gender: patientGender,
+        diagnosis: patientDiagnosis,
+        labReport: {
+          name: labReport.name,
+          mimeType: labReport.mimeType,
+          base64: labReportBase64,
         },
-        paciente: {
-          name: patientName,
-          birthDate: patientBirthDate,
-          gender: patientGender,
-          diagnosis: patientDiagnosis,
-          labReport: {
-            name: labReport.name,
-            mimeType: labReport.mimeType,
-            base64: labReportBase64,
-          },
-          status,
-          recommendations: recommendations.filter((r) => r.trim() !== ""),
-          visitSchedules:
-            status === "hospitalizado"
-              ? visitSchedules.filter((v) => v.day && v.time)
-              : [],
-        },
-      });
+        status,
+        recommendations: recommendations.filter((r) => r.trim() !== ""),
+        visitSchedules:
+          status === "hospitalizado"
+            ? visitSchedules.filter((v) => v.date && v.time)
+            : [],
+      },
+    });
 
-      Toast.show({
-        type: "success",
-        text1: "Registro exitoso",
-        text2: "¡Bienvenido!",
-      });
-      navigation.navigate("Login");
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Error al registrar",
-        text2: error.message,
-      });
-    }
-  };
+    Toast.show({
+      type: "success",
+      text1: "Registro exitoso",
+      text2: "¡Bienvenido!",
+    });
+    navigation.navigate("Login");
+  } catch (error) {
+    Toast.show({
+      type: "error",
+      text1: "Error al registrar",
+      text2: error.message,
+    });
+  }
+};
+
 
   return (
     <ScrollView contentContainerStyle={styles.container}>

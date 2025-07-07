@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "name": "Cuidando Cuidadores",
+    "slug": "Independiente",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/app.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.carolpuentes.Independiente",
+      "googleServicesFile": "./google-services.json",
+      "adaptiveIcon": {
+        "backgroundColor": "#ffffff"
+      },
+      "permissions": ["NOTIFICATIONS"]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "df902fb7-eabc-4b37-be87-eb56c293905a"
+      }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/app.png",
+          "color": "#8080ff",
+          "sounds": []
+        }
+      ]
+    ]
+  }
+}

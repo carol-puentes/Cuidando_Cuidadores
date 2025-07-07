@@ -31,11 +31,12 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20, flexGrow: 1 }}>
-
-
       {/* Miniatura del video */}
       {!showVideo ? (
-        <TouchableOpacity onPress={() => setShowVideo(true)} style={{ marginTop: 20 }}>
+        <TouchableOpacity
+          onPress={() => setShowVideo(true)}
+          style={{ marginTop: 20 }}
+        >
           <Image
             source={{ uri: "https://img.youtube.com/vi/AdZPmob8wtE/0.jpg" }}
             style={{
@@ -74,8 +75,6 @@ export default function HomeScreen({ navigation }) {
     </ScrollView>
   );
 }
-
-
 
 // // DESCARGUE
 // import React, { useEffect, useState } from "react";
@@ -205,9 +204,6 @@ export default function HomeScreen({ navigation }) {
 //     marginBottom: 10,
 //   },
 // });
-
-
-
 
 // import React, { useEffect, useState } from "react";
 // import { View, Text, StyleSheet, FlatList, ActivityIndicator } from "react-native";

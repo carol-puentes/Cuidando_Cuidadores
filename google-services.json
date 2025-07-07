@@ -1,0 +1,68 @@
+{
+  "project_info": {
+    "project_number": "621100125899",
+    "firebase_url": "https://app-independiente-default-rtdb.firebaseio.com",
+    "project_id": "app-independiente",
+    "storage_bucket": "app-independiente.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621100125899:android:9a5657f2a976a226b4954e",
+        "android_client_info": {
+          "package_name": "com.carolpuentes.Independiente"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwPyADoPz9YXR27Cb3ge2efN5z4vsop_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621100125899:android:5831e1d0e8119f7cb4954e",
+        "android_client_info": {
+          "package_name": "com.example.cuidapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwPyADoPz9YXR27Cb3ge2efN5z4vsop_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:621100125899:android:8c51ff3266ad7554b4954e",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDwPyADoPz9YXR27Cb3ge2efN5z4vsop_g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
