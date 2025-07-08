@@ -514,32 +514,80 @@ export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
-      setUser(currentUser);
-      setAuthChecked(true);
+  // useEffect(() => {
+  //   const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+  //     setUser(currentUser);
+  //     setAuthChecked(true);
 
-      if (currentUser) {
+  //     if (currentUser) {
+  //       const token = await registerForPushNotificationsAsync();
+  //       if (token) {
+  //         await setDoc(doc(db, 'users', currentUser.uid), { expoPushToken: token }, { merge: true });
+  //       }
+
+  //       const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
+  //       if (userDoc.exists()) {
+  //         const data = userDoc.data();
+  //         setUser({
+  //           ...currentUser,
+  //           ultimaSemanaCompletada: data.ultimaSemanaCompletada || 0,
+  //         });
+  //       } else {
+  //         setUser({ ...currentUser, ultimaSemanaCompletada: 0 });
+  //       }
+  //     }
+  //   });
+
+  //   return unsubscribe;
+  // }, []);
+
+  useEffect(() => {
+  const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
+    setAuthChecked(true);
+
+    if (currentUser) {
+      const userRef = doc(db, 'users', currentUser.uid);
+      const userDoc = await getDoc(userRef);
+
+      if (userDoc.exists()) {
+        const data = userDoc.data();
+
+        // Verifica si está habilitado
+        if (data.enabled === false) {
+          Toast.show({
+            type: 'error',
+            text1: 'Cuenta deshabilitada',
+            text2: 'Tu cuenta ha sido inhabilitada por el administrador.',
+          });
+
+          await signOut(auth);
+          setUser(null);
+          return;
+        }
+
+        // Guarda token y datos del usuario
         const token = await registerForPushNotificationsAsync();
         if (token) {
-          await setDoc(doc(db, 'users', currentUser.uid), { expoPushToken: token }, { merge: true });
+          await setDoc(userRef, { expoPushToken: token }, { merge: true });
         }
 
-        const userDoc = await getDoc(doc(db, 'users', currentUser.uid));
-        if (userDoc.exists()) {
-          const data = userDoc.data();
-          setUser({
-            ...currentUser,
-            ultimaSemanaCompletada: data.ultimaSemanaCompletada || 0,
-          });
-        } else {
-          setUser({ ...currentUser, ultimaSemanaCompletada: 0 });
-        }
+        setUser({
+          ...currentUser,
+          ultimaSemanaCompletada: data.ultimaSemanaCompletada || 0,
+        });
+      } else {
+        // Si no existe el documento, crea uno básico
+        await setDoc(userRef, { enabled: true }); // Por defecto habilitado
+        setUser({ ...currentUser, ultimaSemanaCompletada: 0 });
       }
-    });
+    } else {
+      setUser(null);
+    }
+  });
 
-    return unsubscribe;
-  }, []);
+  return unsubscribe;
+}, []);
+
 
   useEffect(() => {
     const subscription = Notifications.addNotificationReceivedListener(notification => {
