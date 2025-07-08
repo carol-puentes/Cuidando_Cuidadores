@@ -1,14 +1,5 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  Button,
-  StyleSheet,
-  Dimensions,
-  ScrollView,
-} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Button, StyleSheet, Dimensions, ScrollView,} from "react-native";
 import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -18,6 +9,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { Picker } from "@react-native-picker/picker";
 import * as DocumentPicker from "expo-document-picker";
 import * as FileSystem from "expo-file-system";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const DynamicIslandBackground = () => {
   const { width } = Dimensions.get("window");
@@ -93,6 +85,7 @@ export default function RegisterScreen({ navigation }) {
   const [tutorAddress, setTutorAddress] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
 
   // Paciente
   const [patientName, setPatientName] = useState("");
@@ -273,73 +266,6 @@ export default function RegisterScreen({ navigation }) {
     setStep(3); // o la siguiente acción
   };
 
-  // Registro final con toda la info
-  // const handleRegister = async () => {
-  //   if (!patientDiagnosis || !labReport || !labReportBase64) {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Completa el diagnóstico y adjunta el laboratorio.",
-  //     });
-  //     return;
-  //   }
-  //   if (!status) {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Selecciona el estado del paciente.",
-  //     });
-  //     return;
-  //   }
-
-  //   try {
-  //     const userCredential = await createUserWithEmailAndPassword(
-  //       auth,
-  //       email,
-  //       password
-  //     );
-  //     const user = userCredential.user;
-
-  //     await setDoc(doc(db, "users", user.uid), {
-  //       role: "cuidador",
-  //       tutor: {
-  //         name: tutorName,
-  //         birthDate: tutorBirthDate,
-  //         gender: tutorGender,
-  //         address: tutorAddress,
-  //         email,
-  //       },
-  //       paciente: {
-  //         name: patientName,
-  //         birthDate: patientBirthDate,
-  //         gender: patientGender,
-  //         diagnosis: patientDiagnosis,
-  //         labReport: {
-  //           name: labReport.name,
-  //           mimeType: labReport.mimeType,
-  //           base64: labReportBase64,
-  //         },
-  //         status,
-  //         recommendations: recommendations.filter((r) => r.trim() !== ""),
-  //         visitSchedules:
-  //           status === "hospitalizado"
-  //             ? visitSchedules.filter((v) => v.day && v.time)
-  //             : [],
-  //       },
-  //     });
-
-  //     Toast.show({
-  //       type: "success",
-  //       text1: "Registro exitoso",
-  //       text2: "¡Bienvenido!",
-  //     });
-  //     navigation.navigate("Login");
-  //   } catch (error) {
-  //     Toast.show({
-  //       type: "error",
-  //       text1: "Error al registrar",
-  //       text2: error.message,
-  //     });
-  //   }
-  // };
 
   // Registro final con toda la info
 const handleRegister = async () => {
@@ -496,13 +422,31 @@ const handleRegister = async () => {
             keyboardType="email-address"
             autoCapitalize="none"
           />
-          <TextInput
+          {/* <TextInput
             style={styles.input}
             placeholder="Contraseña"
             value={password}
             onChangeText={setPassword}
             secureTextEntry
+          /> */}
+
+          <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          placeholder="Contraseña"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry={!showPassword}
+        />
+        <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+          <Ionicons
+            name={showPassword ? "eye-off" : "eye"}
+            size={24}
+            color="#555"
           />
+        </TouchableOpacity>
+      </View>
+
           <TouchableOpacity style={styles.button} onPress={handleNext}>
             <Text style={styles.buttonText}>Continuar</Text>
           </TouchableOpacity>
@@ -970,4 +914,21 @@ const styles = StyleSheet.create({
   addButton: {
     color: "#8080ff",
   },
+
+  passwordContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    width: "80%",
+    paddingHorizontal: 10,
+    marginBottom: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    paddingVertical: 12,
+  },
+
 });

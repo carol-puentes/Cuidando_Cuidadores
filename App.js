@@ -469,8 +469,8 @@ function HomeTabs() {
 
   return (
     <Tab.Navigator screenOptions={{ headerShown: false }}>
-      <Tab.Screen name="Taller" component={TallerNavigator} />
       <Tab.Screen name="Inicio" component={HomeScreen} />
+      <Tab.Screen name="Taller" component={TallerNavigator} />
       <Tab.Screen name="Ayuda" component={HelpScreen} />
       <Tab.Screen name="Progreso" component={ProgressScreen} />
       <Tab.Screen
