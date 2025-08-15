@@ -1,5 +1,5 @@
 const semana6 = {
-  semana: 6,
+  semana: 7,
   titulo: "Cuidar sin perderme",
   objetivos: `
 🪷 Puedes cuidar con amor y también volver a ti. No son caminos opuestos, son el mismo viaje.

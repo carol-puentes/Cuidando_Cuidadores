@@ -85,81 +85,21 @@ export default function LoginScreen({ navigation }) {
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-  // const handleLogin = async () => {
-  //   try {
-  //     await signInWithEmailAndPassword(auth, email.trim(), password);
-  //     Toast.show({
-  //       type: "success",
-  //       position: "bottom",
-  //       text1: "Inicio de sesión exitoso",
-  //       text2: "¡Bienvenido de nuevo!",
-  //     });
-  //   } catch (error) {
-  //     Toast.show({
-  //       type: "error",
-  //       position: "bottom",
-  //       text1: "Error al iniciar sesión",
-  //       text2: error.message,
-  //     });
-  //   }
-  // };
 
   const handleLogin = async () => {
-  if (!email || !password) {
-    Toast.show({
-      type: "error",
-      text1: "Campos incompletos",
-      text2: "Ingresa tu correo y contraseña.",
-    });
-    return;
-  }
-
   try {
-    const userCredential = await signInWithEmailAndPassword(auth, email, password);
-    const user = userCredential.user;
+    await signInWithEmailAndPassword(auth, email.trim(), password);
 
-    // Consultar Firestore
-    const userDocRef = doc(db, "users", user.uid);
-    const userDocSnap = await getDoc(userDocRef);
-
-    if (userDocSnap.exists()) {
-      const userData = userDocSnap.data();
-
-      // Si la cuenta está desactivada
-      if (userData.disabled) {
-        await signOut(auth);
-        Toast.show({
-          type: "error",
-          text1: "Cuenta desactivada",
-          text2: "Contacta con el administrador.",
-        });
-        return;
-      }
-
-      // Navegar según rol (si quieres)
-      if (userData.rolNumber === 2) {
-        navigation.navigate("Admin");
-      } else {
-        navigation.navigate("HomeTabs");
-      }
-
-      // Toast.show({
-      //   type: "success",
-      //   text1: "Bienvenido",
-      //   text2: `Hola, ${userData.tutor?.name || "usuario"}`,
-      // });
-    } else {
-      // Usuario no encontrado en Firestore
-      Toast.show({
-        type: "error",
-        text1: "Usuario no registrado",
-        text2: "No se encontró en Firestore.",
-      });
-      await signOut(auth);
-    }
+    // Toast.show({
+    //   type: "success",
+    //   position: "bottom",
+    //   text1: "Inicio de sesión exitoso",
+    //   text2: "¡Bienvenido de nuevo!",
+    // });
   } catch (error) {
     Toast.show({
       type: "error",
+      position: "bottom",
       text1: "Error al iniciar sesión",
       text2: error.message,
     });

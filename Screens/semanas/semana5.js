@@ -1,5 +1,5 @@
 const semana5 = {
-  semana: 5,
+  semana: 6,
   titulo: "Tejiendo redes que sostienen",
   objetivos: `
 🧵 No estás solo(a): hay manos que pueden ayudarte a sostener lo que hoy te pesa.

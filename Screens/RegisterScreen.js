@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, Button, StyleSheet, Dimensions, ScrollView,} from "react-native";
+import { View, Text, TextInput, TouchableOpacity, Button, StyleSheet, Dimensions, ScrollView, ActivityIndicator,} from "react-native";
 import { auth, db } from "../firebaseConfig";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
@@ -77,6 +77,8 @@ const calculateAge = (dateString) => {
 
 export default function RegisterScreen({ navigation }) {
   const [step, setStep] = useState(1);
+  const [isRegistering, setIsRegistering] = useState(false); // ✅ estado para mostrar "Registrando..."
+
 
   // Tutor
   const [tutorName, setTutorName] = useState("");
@@ -268,6 +270,75 @@ export default function RegisterScreen({ navigation }) {
 
 
   // Registro final con toda la info
+// const handleRegister = async () => {
+//   if (!patientDiagnosis || !labReport || !labReportBase64) {
+//     Toast.show({
+//       type: "error",
+//       text1: "Completa el diagnóstico y adjunta el laboratorio.",
+//     });
+//     return;
+//   }
+//   if (!status) {
+//     Toast.show({
+//       type: "error",
+//       text1: "Selecciona el estado del paciente.",
+//     });
+//     return;
+//   }
+
+//   try {
+//     const userCredential = await createUserWithEmailAndPassword(
+//       auth,
+//       email,
+//       password
+//     );
+//     const user = userCredential.user;
+
+//     await setDoc(doc(db, "users", user.uid), {
+//       role: "cuidador",
+//       rolNumber: 1, // <-- Nuevo campo agregado
+//       tutor: {
+//         name: tutorName,
+//         birthDate: tutorBirthDate,
+//         gender: tutorGender,
+//         address: tutorAddress,
+//         email,
+//       },
+//       paciente: {
+//         name: patientName,
+//         birthDate: patientBirthDate,
+//         gender: patientGender,
+//         diagnosis: patientDiagnosis,
+//         labReport: {
+//           name: labReport.name,
+//           mimeType: labReport.mimeType,
+//           base64: labReportBase64,
+//         },
+//         status,
+//         recommendations: recommendations.filter((r) => r.trim() !== ""),
+//         visitSchedules:
+//           status === "hospitalizado"
+//             ? visitSchedules.filter((v) => v.date && v.time)
+//             : [],
+//       },
+//     });
+
+//     Toast.show({
+//       type: "success",
+//       text1: "Registro exitoso",
+//       text2: "¡Bienvenido!",
+//     });
+//     navigation.navigate("Login");
+//   } catch (error) {
+//     Toast.show({
+//       type: "error",
+//       text1: "Error al registrar",
+//       text2: error.message,
+//     });
+//   }
+// };
+
+
 const handleRegister = async () => {
   if (!patientDiagnosis || !labReport || !labReportBase64) {
     Toast.show({
@@ -276,6 +347,7 @@ const handleRegister = async () => {
     });
     return;
   }
+
   if (!status) {
     Toast.show({
       type: "error",
@@ -283,6 +355,8 @@ const handleRegister = async () => {
     });
     return;
   }
+
+  setIsRegistering(true); // <-- empieza el registro
 
   try {
     const userCredential = await createUserWithEmailAndPassword(
@@ -294,7 +368,7 @@ const handleRegister = async () => {
 
     await setDoc(doc(db, "users", user.uid), {
       role: "cuidador",
-      rolNumber: 1, // <-- Nuevo campo agregado
+      rolNumber: 1,
       tutor: {
         name: tutorName,
         birthDate: tutorBirthDate,
@@ -326,6 +400,7 @@ const handleRegister = async () => {
       text1: "Registro exitoso",
       text2: "¡Bienvenido!",
     });
+
     navigation.navigate("Login");
   } catch (error) {
     Toast.show({
@@ -333,8 +408,11 @@ const handleRegister = async () => {
       text1: "Error al registrar",
       text2: error.message,
     });
+  } finally {
+    setIsRegistering(false); // <-- termina el registro
   }
 };
+
 
 
   return (
@@ -383,7 +461,7 @@ const handleRegister = async () => {
                     });
                     return;
                   }
-                  if (age > 80) {
+                  if (age > 100) {
                     Toast.show({
                       type: "error",
                       text1: "Seleccione una fecha correcta.",
@@ -422,13 +500,7 @@ const handleRegister = async () => {
             keyboardType="email-address"
             autoCapitalize="none"
           />
-          {/* <TextInput
-            style={styles.input}
-            placeholder="Contraseña"
-            value={password}
-            onChangeText={setPassword}
-            secureTextEntry
-          /> */}
+        
 
           <View style={styles.passwordContainer}>
         <TextInput
@@ -513,7 +585,7 @@ const handleRegister = async () => {
       )}
 
       {/* Paso 3 - Diagnóstico, laboratorio y estado */}
-      {step === 3 && (
+      {/* {step === 3 && (
         <>
           <TextInput
             style={styles.input}
@@ -538,7 +610,7 @@ const handleRegister = async () => {
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              {/* Fecha */}
+        
               <TouchableOpacity
                 style={{
                   flex: 1,
@@ -570,7 +642,7 @@ const handleRegister = async () => {
                 />
               )}
 
-              {/* Hora */}
+            
               <TouchableOpacity
                 style={{ flex: 1, borderWidth: 1, padding: 8, borderRadius: 4 }}
                 onPress={() => setMostrarPickerHoraCita(true)}
@@ -599,8 +671,9 @@ const handleRegister = async () => {
               )}
             </View>
           </View>
+          
 
-          {/* Estado del paciente */}
+   
           <View style={styles.pickerContainer}>
             <Picker
               selectedValue={status}
@@ -625,7 +698,136 @@ const handleRegister = async () => {
             <Text style={styles.buttonVolver}>Volver</Text>
           </TouchableOpacity>
         </>
-      )}
+      )} */}
+
+
+
+      {step === 3 && (
+  <>
+    <TextInput
+      style={styles.input}
+      placeholder="Diagnóstico"
+      multiline
+      value={patientDiagnosis}
+      onChangeText={setPatientDiagnosis}
+    />
+
+    <TouchableOpacity style={styles.input} onPress={pickDocument}>
+      <Text style={{ color: labReport ? "#000" : "#999" }}>
+        {labReport ? `Archivo: ${labReport.name}` : "Adjuntar laboratorio"}
+      </Text>
+    </TouchableOpacity>
+
+    <View style={styles.date}>
+      <Text style={{ marginBottom: 8, color: "#5a5a5a" }}>Próxima cita:</Text>
+      <View
+        style={{ flexDirection: "row", justifyContent: "space-between" }}
+      >
+        {/* Fecha */}
+        <TouchableOpacity
+          style={{
+            flex: 1,
+            borderWidth: 1,
+            padding: 8,
+            borderRadius: 4,
+            marginRight: 8,
+          }}
+          onPress={() => setMostrarPickerFechaCita(true)}
+        >
+          <Text>
+            {proximaCitaFecha
+              ? proximaCitaFecha.toLocaleDateString()
+              : "Fecha"}
+          </Text>
+        </TouchableOpacity>
+        {mostrarPickerFechaCita && (
+          <DateTimePicker
+            value={proximaCitaFecha || new Date()}
+            mode="date"
+            display="default"
+            minimumDate={new Date()}
+            onChange={(event, selectedDate) => {
+              setMostrarPickerFechaCita(false);
+              if (selectedDate) {
+                setProximaCitaFecha(selectedDate);
+              }
+            }}
+          />
+        )}
+
+        {/* Hora */}
+        <TouchableOpacity
+          style={{ flex: 1, borderWidth: 1, padding: 8, borderRadius: 4 }}
+          onPress={() => setMostrarPickerHoraCita(true)}
+        >
+          <Text>
+            {proximaCitaHora
+              ? proximaCitaHora.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })
+              : "Hora"}
+          </Text>
+        </TouchableOpacity>
+        {mostrarPickerHoraCita && (
+          <DateTimePicker
+            value={proximaCitaHora || new Date()}
+            mode="time"
+            display="default"
+            onChange={(event, selectedTime) => {
+              setMostrarPickerHoraCita(false);
+              if (selectedTime) {
+                setProximaCitaHora(selectedTime);
+              }
+            }}
+          />
+        )}
+      </View>
+    </View>
+
+    {/* Estado del paciente */}
+    <View style={styles.pickerContainer}>
+      <Picker
+        selectedValue={status}
+        onValueChange={(value) => {
+          setStatus(value);
+          if (value === "en casa" || value === "hospitalizado") {
+            setStep(4); // Ir a nuevo paso
+          }
+        }}
+      >
+        <Picker.Item label="Seleccione estado" value="" />
+        <Picker.Item label="En casa" value="en casa" />
+        <Picker.Item label="Hospitalizado" value="hospitalizado" />
+        <Picker.Item label="Fallecido" value="fallecido" />
+      </Picker>
+    </View>
+
+   {isRegistering ? (
+  <View style={styles.centered}>
+    <ActivityIndicator size="large" color="#6CAACD" />
+    <Text style={{ marginTop: 10, color: "#6CAACD" }}>Registrando...</Text>
+  </View>
+) : (
+  <>
+    <TouchableOpacity style={styles.button} onPress={handleRegister}>
+      <Text style={styles.buttonText}>Registrarse</Text>
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => setStep(2)}>
+      <Text style={styles.buttonVolver}>Volver</Text>
+    </TouchableOpacity>
+  </>
+)}
+
+  </>
+)}
+
+
+
+
+
+
+
       {/* Paso 4 - Recomendaciones y horarios si aplica */}
 
       {step === 4 && (

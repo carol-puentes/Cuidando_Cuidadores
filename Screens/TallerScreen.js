@@ -1,83 +1,3 @@
-// // Screens/TallerScreen.js
-// import React, { useState } from 'react';
-// import { View, Text, TouchableOpacity, StyleSheet, FlatList, Alert } from 'react-native';
-
-// import { obtenerSemanasDesbloqueadas } from './utils/progressUtils';
-
-// import semana2 from './semanas/semana2';
-// import semana1 from './semanas/semana1';
-// import semana3 from './semanas/semana3';
-
-// const TODAS_LAS_SEMANAS = [semana1, semana2, semana3]; // Aquí puedes agregar semana3, etc.
-
-// export default function TallerScreen({ navigation }) {
-//   const [progreso, setProgreso] = useState({
-//     ultimaSemanaCompletada: 0, // Esto puede venir de Firebase
-//   });
-
-//   const semanas = obtenerSemanasDesbloqueadas(progreso);
-
-//   const handleAbrirSemana = (semanaIndex) => {
-//     if (!semanas[semanaIndex].desbloqueada) {
-//       Alert.alert('Módulo bloqueado', 'Primero debes completar la semana anterior.');
-//       return;
-//     }
-
-//     navigation.navigate('DetalleSemana', {
-//       contenido: TODAS_LAS_SEMANAS[semanaIndex],
-//       onCompletar: () => {
-//         // Simulamos guardar el progreso
-//         setProgreso((prev) => ({
-//           ultimaSemanaCompletada: Math.max(prev.ultimaSemanaCompletada, semanaIndex + 1),
-//         }));
-//       }
-//     });
-//   };
-
-//   return (
-//     <View style={styles.container}>
-//       <Text style={styles.titulo}>Módulos Semanales</Text>
-//       <FlatList
-//         data={semanas}
-//         keyExtractor={(item) => `semana-${item.semana}`}
-//         renderItem={({ item, index }) => (
-//           <TouchableOpacity
-//             style={[
-//               styles.item,
-//               !item.desbloqueada && styles.bloqueado
-//             ]}
-//             onPress={() => handleAbrirSemana(index)}
-//           >
-//             <Text style={styles.texto}>
-//               Semana {item.semana} {item.desbloqueada ? '' : '🔒'}
-//             </Text>
-//           </TouchableOpacity>
-//         )}
-//       />
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: { flex: 1, padding: 20 },
-//   titulo: { fontSize: 24, fontWeight: 'bold', marginBottom: 20 },
-//   item: {
-//     backgroundColor: '#ddd',
-//     padding: 16,
-//     marginVertical: 8,
-//     borderRadius: 8,
-//   },
-//   texto: { fontSize: 18 },
-//   bloqueado: {
-//     backgroundColor: '#bbb',
-//     opacity: 0.6
-//   }
-// });
-
-
-
-
-
 import React, { useState } from "react";
 import {
   View,
@@ -87,107 +7,137 @@ import {
   FlatList,
   Alert,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, getDocs, collection, updateDoc } from "firebase/firestore";
 import { auth, db } from "../firebaseConfig";
-
-import { obtenerSemanasDesbloqueadas } from "./utils/progressUtils";
 import { BlurView } from "expo-blur";
-
-import semana1 from "./semanas/semana1";
-import semana2 from "./semanas/semana2";
-import semana3 from "./semanas/semana3";
-import semana4 from "./semanas/semana4";
-import semana5 from "./semanas/semana5";
-import semana6 from "./semanas/semana6";
-
-const TODAS_LAS_SEMANAS = [semana1, semana2, semana3, semana4, semana5, semana6];
+import { Ionicons } from "@expo/vector-icons";
 
 export default function TallerScreen({ navigation }) {
-  const [progreso, setProgreso] = useState({
-    ultimaSemanaCompletada: 0,
-  });
+  const [progreso, setProgreso] = useState({ ultimaSemanaCompletada: 0 });
+  const [rolNumber, setRolNumber] = useState(1);
+  const [semanas, setSemanas] = useState([]);
 
-  // 🔄 Cargar progreso desde Firebase cuando se enfoca esta pantalla
   useFocusEffect(
     React.useCallback(() => {
-      const cargarProgreso = async () => {
+      const cargarDatos = async () => {
         const userId = auth.currentUser?.uid;
         if (!userId) return;
 
         try {
           const userDoc = await getDoc(doc(db, "users", userId));
           const data = userDoc.data();
-          setProgreso({
-            ultimaSemanaCompletada: data?.ultimaSemanaCompletada || 0,
-          });
+
+          setProgreso({ ultimaSemanaCompletada: data?.ultimaSemanaCompletada || 0 });
+          setRolNumber(data?.rolNumber || 1);
+
+          const snapshot = await getDocs(collection(db, "semanas"));
+          const semanasFirestore = snapshot.docs
+            .map(doc => ({ id: doc.id, ...doc.data() }))
+            .sort((a, b) => a.semana - b.semana);
+
+          setSemanas(semanasFirestore);
         } catch (error) {
-          console.error("Error al obtener progreso:", error);
+          console.error("Error al cargar datos:", error);
         }
       };
 
-      cargarProgreso();
+      cargarDatos();
     }, [])
   );
 
-  const semanas = obtenerSemanasDesbloqueadas(progreso);
+  const handleAbrirSemana = (semanaData, index) => {
+    const desbloqueada = rolNumber === 2 || index <= progreso.ultimaSemanaCompletada;
 
-  const handleAbrirSemana = (semanaIndex) => {
-    if (!semanas[semanaIndex].desbloqueada) {
-      Alert.alert(
-        "Módulo bloqueado",
-        "Primero debes completar la semana anterior."
-      );
+    if (!desbloqueada) {
+      Alert.alert("Módulo bloqueado", "Primero debes completar la semana anterior.");
       return;
     }
 
-    navigation.navigate("DetalleSemana", {
-      contenido: TODAS_LAS_SEMANAS[semanaIndex],
-      onCompletar: async () => {
-        const nuevaSemana = semanaIndex + 1;
-        const userId = auth.currentUser?.uid;
+    if (rolNumber === 2) {
+      navigation.navigate("EditarSemana", {
+        contenido: semanaData,
+        semanaIndex: index,
+      });
+    } else {
+      navigation.navigate("DetalleSemana", {
+        contenido: semanaData,
+        rolNumber,
+        onCompletar: async () => {
+          const nuevaSemana = index + 1;
+          const userId = auth.currentUser?.uid;
 
-        try {
-          await updateDoc(doc(db, "users", userId), {
-            ultimaSemanaCompletada: nuevaSemana,
-          });
+          try {
+            await updateDoc(doc(db, "users", userId), {
+              ultimaSemanaCompletada: nuevaSemana,
+            });
 
-          setProgreso((prev) => ({
-            ultimaSemanaCompletada: Math.max(
-              prev.ultimaSemanaCompletada,
-              nuevaSemana
-            ),
-          }));
-        } catch (error) {
-          console.error("Error al actualizar el progreso:", error);
-        }
-      },
-    });
+            setProgreso((prev) => ({
+              ...prev,
+              ultimaSemanaCompletada: Math.max(prev.ultimaSemanaCompletada, nuevaSemana),
+            }));
+          } catch (error) {
+            console.error("Error al actualizar el progreso:", error);
+          }
+        },
+      });
+    }
   };
 
   return (
-    <ImageBackground
-      source={require("../assets/talleres_fondo.png")}
-      style={styles.Imagen_blur}
-      resizeMode="cover"
-    >
+    <ImageBackground source={require("../assets/talleres_fondo.png")} style={styles.Imagen_blur} resizeMode="cover">
       <BlurView intensity={50} tint="light" style={styles.container}>
         <View style={styles.container}>
-          <Text style={styles.titulo}>Módulos Semanales</Text>
+          
+        <View style={styles.row}>
+        <Ionicons name="heart-circle-outline" size={64} color="#A2D5F2" style={styles.icon} />
+           <Text style={styles.titulo}>Módulos Semanales</Text>
+      </View>
+
+      
+      {rolNumber === 1 && (
+  <>
+    <Text style={styles.paragraph}>
+      Este programa ha sido creado desde el{" "}
+      <Text style={styles.bold}>Programa de Enfermería de la Universidad Surcolombiana</Text>,
+      especialmente para ti, cuidador(a), como un reconocimiento a tu entrega, amor y compromiso diario.
+    </Text>
+
+    <Text style={styles.paragraph}>
+      Gracias por permitirnos acompañarte en este camino.
+    </Text>
+  </>
+)}
+
+
           <FlatList
             data={semanas}
             keyExtractor={(item) => `semana-${item.semana}`}
-            renderItem={({ item, index }) => (
-              <TouchableOpacity
-                style={[styles.item, !item.desbloqueada && styles.bloqueado]}
-                onPress={() => handleAbrirSemana(index)}
-              >
-                <Text style={styles.texto}>
-                  Semana {item.semana} {item.desbloqueada ? "" : "🔒"}
-                </Text>
-              </TouchableOpacity>
-            )}
+            renderItem={({ item, index }) => {
+              const desbloqueada = rolNumber === 2 || index <= progreso.ultimaSemanaCompletada;
+
+              let texto;
+              if (index === 0) {
+                texto = rolNumber === 2 ? "Editar Prueba Inicial" : `Prueba Inicial ${desbloqueada ? "" : "🔒"}`;
+              } else if (index === semanas.length - 1) {
+                texto = rolNumber === 2 ? "Editar Prueba Final" : `Prueba Final ${desbloqueada ? "" : "🔒"}`;
+              } else {
+                texto = rolNumber === 2
+                  ? `Editar Semana ${item.semana}`
+                  : `Semana ${item.semana} ${desbloqueada ? "" : "🔒"}`;
+              }
+
+              return (
+                <TouchableOpacity
+                  style={[styles.item, !desbloqueada && styles.bloqueado]}
+                  onPress={() => handleAbrirSemana(item, index)}
+                >
+                  <Text style={styles.texto}>{texto}</Text>
+                </TouchableOpacity>
+              );
+            }}
           />
         </View>
       </BlurView>
@@ -195,20 +145,83 @@ export default function TallerScreen({ navigation }) {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { flex: 1, padding: 20 },
 
-  Imagen_blur: { flex: 1},
-  titulo: { fontSize: 24, fontWeight: "bold", marginBottom: 20 },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 20,
+  },
+  Imagen_blur: {
+    flex: 1,
+  },
+  titulo: {
+    fontSize: 24,
+    fontWeight: "bold",
+    marginBottom: 20,
+    color: "#333",
+    textAlign: "center",
+  },
   item: {
-    backgroundColor: "#ddd",
+    backgroundColor: "#F5F5F5",
     padding: 16,
     marginVertical: 8,
-    borderRadius: 8,
+    borderRadius: 12,
+    elevation: 2,
   },
-  texto: { fontSize: 18 },
+  texto: {
+    fontSize: 18,
+    color: "#333",
+  },
   bloqueado: {
-    backgroundColor: "#bbb",
-    opacity: 0.6,
+    backgroundColor: "#ccc",
+    opacity: 0.7,
   },
+
+
+
+
+  container_introduccion: {
+    backgroundColor: "#ffffffee", // Blanco con transparencia
+    borderRadius: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 5,
+    alignItems: "center",
+    width: "100%",
+  },
+  icon: {
+    marginBottom: 12,
+  },
+  title_introduccion: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#3B3B98",
+    textAlign: "center",
+    marginBottom: 16,
+  },
+  paragraph: {
+    fontSize: 16,
+    color: "#444",
+    textAlign: "justify",
+    marginBottom: 12,
+    lineHeight: 24,
+  },
+  bold: {
+    fontWeight: "bold",
+    color: "#3B3B98",
+  },
+
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'center',
+  },
+
+
 });

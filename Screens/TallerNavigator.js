@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
 import TallerScreen from './TallerScreen';
 import DetalleSemana from './DetalleSemana';
+import EditarSemana from './EditarSemana';
 
 const Stack = createNativeStackNavigator();
 
@@ -12,6 +13,8 @@ export default function TallerNavigator() {
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="TallerHome" component={TallerScreen} />
       <Stack.Screen name="DetalleSemana" component={DetalleSemana} />
+       <Stack.Screen name="EditarSemana" component={EditarSemana} />
+
     </Stack.Navigator>
   );
 }
