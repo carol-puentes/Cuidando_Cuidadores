@@ -21,7 +21,7 @@ export default function EditarTutorScreen({ navigation }) {
   const [name, setName] = useState("");
   const [gender, setGender] = useState("");
   const [email, setEmail] = useState("");
-  const [birthDate, setBirthDate] = useState(null);
+  const [birthDate, setBirthDate] = useState(""); // ahora será string YYYY-MM-DD
   const [address, setAddress] = useState("");
   const [age, setAge] = useState(null);
 
@@ -45,9 +45,8 @@ export default function EditarTutorScreen({ navigation }) {
           setEmail(data.tutor?.email || "");
           setAddress(data.tutor?.address || "");
           if (data.tutor?.birthDate) {
-            const date = new Date(data.tutor.birthDate);
-            setBirthDate(date);
-            calculateAge(date);
+            setBirthDate(data.tutor.birthDate); // ya viene como YYYY-MM-DD
+            calculateAge(new Date(data.tutor.birthDate));
           }
         } else {
           Alert.alert("No se encontró información del tutor");
@@ -63,6 +62,13 @@ export default function EditarTutorScreen({ navigation }) {
 
     fetchTutorData();
   }, []);
+
+  const formatDate = (date) => {
+    const y = date.getFullYear();
+    const m = String(date.getMonth() + 1).padStart(2, "0");
+    const d = String(date.getDate()).padStart(2, "0");
+    return `${y}-${m}-${d}`;
+  };
 
   const calculateAge = (date) => {
     const today = new Date();
@@ -97,7 +103,7 @@ export default function EditarTutorScreen({ navigation }) {
         "tutor.gender": gender,
         "tutor.email": email,
         "tutor.address": address,
-        "tutor.birthDate": birthDate.toISOString(),
+        "tutor.birthDate": birthDate, // Guardamos como string YYYY-MM-DD
         "tutor.age": age,
       });
 
@@ -139,20 +145,11 @@ export default function EditarTutorScreen({ navigation }) {
             onChangeText={setGender}
           />
 
-          {/* <Text style={styles.label}>Correo electrónico</Text>
-          <TextInput
-            style={styles.input}
-            value={email}
-            onChangeText={setEmail}
-            keyboardType="email-address"
-            autoCapitalize="none"
-          /> */}
-
           <Text style={styles.label}>Correo electrónico</Text>
           <TextInput
-            style={[styles.input, { backgroundColor: "#ddd", color: "#555" }]} // color de fondo y texto atenuado
+            style={[styles.input, { backgroundColor: "#ddd", color: "#555" }]}
             value={email}
-            editable={false} // 🔹 esto evita que se pueda escribir
+            editable={false}
             keyboardType="email-address"
             autoCapitalize="none"
           />
@@ -169,14 +166,12 @@ export default function EditarTutorScreen({ navigation }) {
             style={styles.input}
             onPress={() => setShowDatePicker(true)}
           >
-            <Text>
-              {birthDate ? birthDate.toLocaleDateString() : "Seleccionar fecha"}
-            </Text>
+            <Text>{birthDate || "Seleccionar fecha"}</Text>
           </TouchableOpacity>
 
           {showDatePicker && (
             <DateTimePicker
-              value={birthDate || new Date()}
+              value={birthDate ? new Date(birthDate) : new Date()}
               mode="date"
               display={Platform.OS === "ios" ? "spinner" : "calendar"}
               onChange={(event, date) => {
@@ -188,7 +183,6 @@ export default function EditarTutorScreen({ navigation }) {
                   if (m < 0 || (m === 0 && today.getDate() < date.getDate())) {
                     ageCalc--;
                   }
-
                   if (ageCalc < 18) {
                     Alert.alert(
                       "Edad no permitida",
@@ -196,8 +190,7 @@ export default function EditarTutorScreen({ navigation }) {
                     );
                     return;
                   }
-
-                  setBirthDate(date);
+                  setBirthDate(formatDate(date));
                   calculateAge(date);
                 }
               }}

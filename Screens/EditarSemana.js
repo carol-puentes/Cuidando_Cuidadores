@@ -208,6 +208,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     flexDirection: "row",
     justifyContent: "center",
+    marginBottom:30,
   },
   botonTexto: {
     color: "#fff",

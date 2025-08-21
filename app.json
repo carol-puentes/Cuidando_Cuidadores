@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "Cuidando Cuidadores",
+    "name": "AYLLU",
     "slug": "Independiente",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -18,7 +18,7 @@
       "package": "com.carolpuentes.Independiente"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/app.png"
     },
     "extra": {
       "eas": {

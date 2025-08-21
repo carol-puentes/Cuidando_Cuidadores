@@ -7,26 +7,21 @@ import {
   StyleSheet,
   Dimensions,
 } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
-// import { auth } from "../firebaseConfig";
-import Toast from "react-native-toast-message";
-import Svg, { Path, Defs, LinearGradient, Stop, Circle } from "react-native-svg";
-import Ionicons from "react-native-vector-icons/Ionicons"; // Asegúrate de tener instalado este paquete
+import { signInWithEmailAndPassword } from "firebase/auth"; // Función de Firebase para iniciar sesión con email y contraseña
+import Toast from "react-native-toast-message"; // Librería para mostrar notificaciones tipo "toast"
+import Svg, { Path, Defs, LinearGradient, Stop, Circle } from "react-native-svg"; // Librería para gráficos vectoriales
+import Ionicons from "react-native-vector-icons/Ionicons"; // Íconos
 
-import { signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-// Importa tu configuración personalizada
-import { auth, db } from "../firebaseConfig"; // <-- db viene de aquí
+// Firebase config (debe estar configurado en otro archivo: firebaseConfig.js)
+import { auth, db } from "../firebaseConfig";
 
-
-
-
+// --- Componente de fondo decorativo ---
 const DynamicIslandBackground = () => {
   const { width } = Dimensions.get("window");
 
   return (
     <>
-      {/* Parte superior */}
+      {/* Fondo superior */}
       <View style={{ position: "absolute", top: 0, left: 0, width, height: 250 }}>
         <Svg width={width} height={250} viewBox={`0 0 ${width} 250`}>
           <Defs>
@@ -35,6 +30,7 @@ const DynamicIslandBackground = () => {
               <Stop offset="100%" stopColor="#B8E8D2" />
             </LinearGradient>
           </Defs>
+          {/* Curvas SVG para el fondo */}
           <Path
             d={`M0,250  
                 Q${width * 0.25},125 ${width * 0.5},160  
@@ -47,7 +43,7 @@ const DynamicIslandBackground = () => {
         </Svg>
       </View>
 
-      {/* Parte inferior rotada */}
+      {/* Fondo inferior (rotado 180°) */}
       <View
         style={{
           position: "absolute",
@@ -80,37 +76,36 @@ const DynamicIslandBackground = () => {
   );
 };
 
+// --- Pantalla principal de Login ---
 export default function LoginScreen({ navigation }) {
+  // Estados locales para email, password y visibilidad de contraseña
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
 
-
+  // Función para manejar el inicio de sesión
   const handleLogin = async () => {
-  try {
-    await signInWithEmailAndPassword(auth, email.trim(), password);
+    try {
+      // Firebase: autenticar con email y contraseña
+      await signInWithEmailAndPassword(auth, email.trim(), password);
 
-    // Toast.show({
-    //   type: "success",
-    //   position: "bottom",
-    //   text1: "Inicio de sesión exitoso",
-    //   text2: "¡Bienvenido de nuevo!",
-    // });
-  } catch (error) {
-    Toast.show({
-      type: "error",
-      position: "bottom",
-      text1: "Error al iniciar sesión",
-      text2: error.message,
-    });
-  }
-};
-
+    } catch (error) {
+      // Mostrar error en caso de fallo
+      Toast.show({
+        type: "error",
+        position: "bottom",
+        text1: "Error al iniciar sesión",
+        text2: error.message,
+      });
+    }
+  };
 
   return (
     <View style={styles.container}>
+      {/* Fondo decorativo */}
       <DynamicIslandBackground />
 
+      {/* Ícono de usuario */}
       <Svg width={80} height={80} viewBox="0 0 24 24" style={{ marginBottom: 20 }}>
         <Circle cx="12" cy="8" r="4" stroke="black" strokeWidth="2" fill="none" />
         <Path d="M4 20c0-4 4-6 8-6s8 2 8 6" stroke="black" strokeWidth="2" fill="none" />
@@ -118,6 +113,7 @@ export default function LoginScreen({ navigation }) {
 
       <Text style={styles.title}>Iniciar Sesión</Text>
 
+      {/* Input de correo */}
       <TextInput
         style={styles.input}
         placeholder="Correo electrónico"
@@ -126,6 +122,7 @@ export default function LoginScreen({ navigation }) {
         onChangeText={setEmail}
       />
 
+      {/* Input de contraseña con botón para mostrar/ocultar */}
       <View style={styles.passwordContainer}>
         <TextInput
           style={styles.passwordInput}
@@ -143,10 +140,12 @@ export default function LoginScreen({ navigation }) {
         </TouchableOpacity>
       </View>
 
+      {/* Botón de login */}
       <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Ingresar</Text>
       </TouchableOpacity>
 
+      {/* Link para ir a registro */}
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.registerLink}>¿No tienes cuenta? Regístrate</Text>
       </TouchableOpacity>
@@ -154,6 +153,7 @@ export default function LoginScreen({ navigation }) {
   );
 }
 
+// --- Estilos ---
 const styles = StyleSheet.create({
   container: {
     flex: 1,
